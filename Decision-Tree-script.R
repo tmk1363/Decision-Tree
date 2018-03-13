@@ -1,0 +1,31 @@
+data<- read.csv("formability.csv",FALSE,",")
+str(data)
+data$V1<-as.factor(data$V1)
+summary(data)
+str(data)
+set.seed(1234)
+pd <- sample(2,nrow(data),replace=TRUE,prob=c(0.8,0.2))
+train<-data[pd==1,]
+train
+validate<-data[pd==2,]
+str(validate)
+library(party)
+tree <-ctree(V1~V2+V3,data=train)
+tree
+plot(tree)
+predict(tree,validate,type="prob")
+predict(tree,validate)
+library(rpart)
+tree1<-rpart(V1~V2+V3,train)
+library(rpart.plot)
+rpart.plot(tree1)
+rpart.plot(tree1,extra=1)
+predict(tree1,validate)
+tab<-table(predict(tree),train$V1)
+print(tab)
+sum(diag(tab))/sum(tab)
+testPred<-predict(tree,validate)
+tab1<-table(testPred,validate$V1)
+print(tab1)
+sum(diag(tab1))/sum(tab1)
+
